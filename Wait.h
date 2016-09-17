@@ -1,11 +1,10 @@
 #pragma once
 
-//all times in ms
-#define WAIT_MS(timeMs, accumulatorMs, timePassedMs) \
-  accumulatorMs += timePassedMs; \
-  if(accumulatorMs > timeMs) \
+#define WAIT(waitTime, accumulator, timePassed) \
+  accumulator += timePassed; \
+  if(accumulator > waitTime) \
   { \
-    accumulatorMs = 0; \
+    accumulator = 0; \
   } \
   else \
   { \

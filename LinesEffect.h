@@ -4,14 +4,14 @@ struct
 {
   uint8_t row;
   int8_t dir;
-  uint16_t timePassed; //in ms
+  uint32_t timePassed; //in us
 } linesState;
 
 void initLines()
 {
   linesState.row = 0;
   linesState.dir = 1;
-  linesState.timePassed = 30000; //some big number to force execution on first call
+  linesState.timePassed = 300000; //some big number to force execution on first call
 }
 
 /** @param timeSinceLastCall in micro seconds
@@ -20,10 +20,7 @@ void updateLines(const uint16_t timeSinceLastCall, const uint8_t speed, const ui
                  const uint8_t numColls)
 {
   //TODO use speed
-
-  //wait for 250 ms before updating
-  //division is suuuuuper slow on arduino, use bit shift instead (this divides by 1024 instead of 1000 but thats good enough)
-  WAIT_MS(500, linesState.timePassed, timeSinceLastCall >> 10);
+  WAIT(1000000, linesState.timePassed, timeSinceLastCall);
   
   if(linesState.row >= numRows - 1)
   {
