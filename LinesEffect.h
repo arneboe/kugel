@@ -1,4 +1,5 @@
-
+#pragma once
+#include "Wait.h"
 struct 
 {
   uint8_t row;
@@ -22,15 +23,7 @@ void updateLines(const uint16_t timeSinceLastCall, const uint8_t speed, const ui
 
   //wait for 250 ms before updating
   //division is suuuuuper slow on arduino, use bit shift instead (this divides by 1024 instead of 1000 but thats good enough)
-  linesState.timePassed += timeSinceLastCall >> 10;
-  if(linesState.timePassed > 100)
-  {
-    linesState.timePassed = 0;
-  }
-  else
-  {
-    return;
-  }
+  WAIT_MS(500, linesState.timePassed, timeSinceLastCall >> 10);
   
   if(linesState.row >= numRows - 1)
   {
