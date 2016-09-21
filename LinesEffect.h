@@ -1,13 +1,15 @@
 #pragma once
 #include "Wait.h"
-struct 
+struct
 {
   uint8_t row;
   int8_t dir;
   uint32_t timePassed; //in us
 } linesState;
 
-void initLines()
+
+void initLines(const uint8_t numRows,
+                 const uint8_t numColls)
 {
   linesState.row = 0;
   linesState.dir = 1;
@@ -20,7 +22,7 @@ void updateLines(const uint16_t timeSinceLastCall, const uint8_t speed, const ui
                  const uint8_t numColls)
 {
   //TODO use speed
-  WAIT(1000000, linesState.timePassed, timeSinceLastCall);
+  WAIT(80000, linesState.timePassed, timeSinceLastCall);
   
   if(linesState.row >= numRows - 1)
   {
