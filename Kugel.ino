@@ -4,35 +4,66 @@
 uint16_t getTimeSinceLastCall();
 
 #include "Body.h"
+#include "Eye.h"
 
 void setup() {
   Serial.begin(9600);
   
   bodySetup();
+  eyeSetup();
   //TODO other setups here
 }
 
 
+unsigned long lastStroboOnTime = 0;
+unsigned long lastStroboOffTime = 0;
+bool stroboOn = false;
+
+
 void loop() {
-  const uint16_t speed = analogRead(A0);; //TODO read from user
-  const uint8_t brightness = 255; //TODO read from user 
- // currentMode = VORTEX; //TODO read from user
+  const uint16_t speed = analogRead(A0);
+  Serial.print(speed); Serial.print("  ");
+ const uint8_t brightness = map(analogRead(A3), 0, 1023, 0, 255);
+ Serial.print(brightness); Serial.print("  ");
+ const uint16_t strobo = analogRead(A5);
+ Serial.print(strobo); Serial.print("  ");
+ Serial.println("");
  const uint16_t timeSinceLastCall = getTimeSinceLastCall();
  
  bodyLoop(timeSinceLastCall, speed);
- //TODO other loops here
+ eyeLoop(timeSinceLastCall, speed);
+
+
  
- FastLED.setBrightness(brightness);
+ if(strobo < 990)
+ {
+    const unsigned long time = micros();
+    const unsigned long offTime = map(strobo, 0, 1023, 4000, 100000);
+    if(stroboOn && time - lastStroboOnTime > 12000)
+    {
+      FastLED.setBrightness(0);
+      stroboOn = false;
+      lastStroboOffTime = time;
+    }
+    else if(!stroboOn && time - lastStroboOffTime > offTime)
+    {
+      FastLED.setBrightness(brightness);
+      stroboOn = true;
+      lastStroboOnTime = time;
+    }
+ }
+ else
+ {
+    stroboOn = false;
+    FastLED.setBrightness(brightness);
+ }
+ 
+ 
  FastLED.show(); 
 }
 
 /*
-// [y][x]
-uint8_t mapping[5][16] = {{47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47},
-                          {41, 41, 46, 46, 49, 45, 45, 44, 44, 44, 43, 43, 43, 42, 42, 42},
-                          {40, 40, 30, 31, 32, 32, 33, 34, 35, 35, 36, 37, 37, 38, 38, 39},
-                          {27, 28, 29, 16, 17, 18, 19, 20, 21, 21, 22, 23, 24, 25, 25, 26},
-                          {12, 13, 14, 15,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11}};
+
 
 CRGB& getPixel(const uint8_t x, const uint8_t y)
 {

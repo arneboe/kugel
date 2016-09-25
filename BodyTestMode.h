@@ -21,13 +21,14 @@ void updateBody(const uint16_t timeSinceLastCall, const uint16_t speed, const ui
   
   clearBodyPixels();
   
-  for(uint8_t y = 0; y < numColls; ++y)
+  for(uint8_t y = 0; y < numRows; ++y)
   {
     CRGB& p = getBodyPixel(bodyTestState.col, y);
     p.setHue(0);
   }
   
- // bodyTestState.col = (bodyTestState.col + 1) % numColls;
+  bodyTestState.col = (bodyTestState.col + 1) % numColls;
 }
+
 
 
